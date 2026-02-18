@@ -23,14 +23,18 @@ const BookingForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Fetching users and resources...');
         const [usersData, resourcesData] = await Promise.all([
           getUsers(),
           getResources(),
         ]);
+        console.log('Users:', usersData);
+        console.log('Resources:', resourcesData);
         setUsers(usersData);
         setResources(resourcesData.filter(r => r.status === 'AVAILABLE'));
-      } catch (err) {
-        setError('Failed to fetch data');
+      } catch (err: any) {
+        console.error('Error fetching data:', err);
+        setError(err.message || 'Failed to fetch data');
       } finally {
         setLoading(false);
       }

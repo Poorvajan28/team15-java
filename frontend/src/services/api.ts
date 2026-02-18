@@ -9,7 +9,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // Add timeout to catch network errors
+  timeout: 15000,
 });
 
 // Add auth token to requests
@@ -20,19 +20,21 @@ api.interceptors.request.use(async (config) => {
       config.headers.Authorization = `Bearer ${session.access_token}`;
     }
   } catch (e) {
-    // Ignore auth errors on request
+    console.warn('Auth error:', e);
   }
   return config;
 });
 
-// Handle auth errors and network errors
+// Handle errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', error);
+    
     // Handle network errors
     if (!error.response) {
       console.error('Network error:', error.message);
-      return Promise.reject(new Error('Cannot connect to server. Please check if the backend is running.'));
+      return Promise.reject(new Error('Cannot connect to server. Please check if the backend is running on port 8080.'));
     }
     
     if (error.response?.status === 401) {
