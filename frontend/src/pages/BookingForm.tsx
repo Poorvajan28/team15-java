@@ -54,13 +54,15 @@ const BookingForm = () => {
         resourceId: parseInt(formData.resourceId),
         bookingDate: formData.bookingDate,
         timeSlot: formData.timeSlot,
+        status: 'PENDING',
       });
       setSuccess('Booking created successfully!');
       setTimeout(() => {
         navigate('/bookings');
       }, 1000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create booking');
+      console.error('Booking error:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to create booking');
     } finally {
       setSubmitting(false);
     }

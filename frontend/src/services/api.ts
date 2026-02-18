@@ -117,8 +117,8 @@ export const getBookingById = async (id: number): Promise<Booking> => {
   return response.data;
 };
 
-export const createBooking = async (booking: Omit<Booking, 'id' | 'status' | 'userName' | 'userEmail' | 'resourceName' | 'resourceType' | 'createdAt' | 'updatedAt'>): Promise<Booking> => {
-  const response = await api.post('/bookings', booking);
+export const createBooking = async (booking: { userId: number; resourceId: number; bookingDate: string; timeSlot: string; status?: string }): Promise<Booking> => {
+  const response = await api.post('/bookings', { ...booking, status: booking.status || 'PENDING' });
   return response.data;
 };
 
