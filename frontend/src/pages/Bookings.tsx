@@ -8,7 +8,7 @@ import type { Booking, BookingStatus } from '../types';
 const Bookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<BookingStatus | 'ALL'>('ALL');
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const Bookings = () => {
       try {
         const data = await getBookings();
         setBookings(data);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch bookings');
       } finally {
         setLoading(false);
@@ -89,8 +89,8 @@ const Bookings = () => {
     }
   };
 
-  const filteredBookings = filter === 'ALL' 
-    ? bookings 
+  const filteredBookings = filter === 'ALL'
+    ? bookings
     : bookings.filter(b => b.status === filter);
 
   if (loading) {
@@ -130,11 +130,10 @@ const Bookings = () => {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  filter === status
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-dark-700 text-dark-400 hover:text-white'
-                }`}
+                className={`px-4 py-2 rounded-lg transition-all ${filter === status
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-dark-700 text-dark-400 hover:text-white'
+                  }`}
               >
                 {status}
               </button>
@@ -156,13 +155,12 @@ const Bookings = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg font-semibold text-white">{booking.resourceName}</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      booking.status === 'PENDING'
-                        ? 'bg-yellow-500/20 text-yellow-400'
-                        : booking.status === 'APPROVED'
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'PENDING'
+                      ? 'bg-yellow-500/20 text-yellow-400'
+                      : booking.status === 'APPROVED'
                         ? 'bg-green-500/20 text-green-400'
                         : 'bg-red-500/20 text-red-400'
-                    }`}>
+                      }`}>
                       {booking.status}
                     </span>
                   </div>
@@ -185,7 +183,7 @@ const Bookings = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {booking.status === 'PENDING' && (
                   <div className="flex gap-2">
                     <button

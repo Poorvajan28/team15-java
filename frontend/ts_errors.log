@@ -1,0 +1,2 @@
+src/pages/Bookings.tsx(11,10): error TS6133: 'error' is declared but its value is never read.
+src/pages/Users.tsx(14,9): error TS6133: 'handleUsersChange' is declared but its value is never read.

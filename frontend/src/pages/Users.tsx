@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, Users as UsersIcon } from 'lucide-react';
 import { getUsers, deleteUser } from '../services/api';
@@ -10,10 +10,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Callback to handle data changes from realtime
-  const handleUsersChange = useCallback((newUsers: User[]) => {
-    setUsers(newUsers);
-  }, []);
+
 
   // Fetch initial users
   useEffect(() => {
@@ -113,7 +110,7 @@ const Users = () => {
       <div className="glass rounded-2xl p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl">
               <UsersIcon className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -168,20 +165,18 @@ const Users = () => {
                     <td className="text-dark-400">{user.email}</td>
                     <td className="text-dark-400">{user.phone}</td>
                     <td>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        user.role === 'STAFF'
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === 'STAFF'
                           ? 'bg-purple-500/20 text-purple-400'
                           : 'bg-blue-500/20 text-blue-400'
-                      }`}>
+                        }`}>
                         {user.role}
                       </span>
                     </td>
                     <td>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        user.status === 'ACTIVE'
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.status === 'ACTIVE'
                           ? 'bg-green-500/20 text-green-400'
                           : 'bg-red-500/20 text-red-400'
-                      }`}>
+                        }`}>
                         {user.status}
                       </span>
                     </td>
