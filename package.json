@@ -1,0 +1,12 @@
+{
+    "name": "campus-resource-management-root",
+    "private": true,
+    "scripts": {
+        "install-frontend": "cd frontend && npm install",
+        "build": "cd frontend && npm install && npm run build && cd .. && npx shx rm -rf dist && npx shx cp -r frontend/dist dist",
+        "dev": "cd frontend && npm run dev"
+    },
+    "devDependencies": {
+        "shx": "^0.3.4"
+    }
+}
