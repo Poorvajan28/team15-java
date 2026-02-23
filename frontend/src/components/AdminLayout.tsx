@@ -1,41 +1,52 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  Calendar, 
-  GraduationCap, 
+import { useAuth } from '../contexts/AuthContext';
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  Calendar,
+  Settings,
   LogOut,
   Menu,
   X,
   Bell,
   Search,
   ChevronDown,
-  Shield
+  Shield,
+  BarChart3,
+  HelpCircle
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 
-const Layout = () => {
-  const { user, userProfile, signOut, isAdmin } = useAuth();
+const AdminLayout = () => {
+  const { user, userProfile, signOut } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const navItems = [
-    { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/users', icon: Users, label: 'Users' },
-    { path: '/resources', icon: Building2, label: 'Resources' },
-    { path: '/bookings', icon: Calendar, label: 'Bookings' },
+  const navigation = [
+    { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Users', href: '/admin/users', icon: Users },
+    { name: 'Resources', href: '/admin/resources', icon: Building2 },
+    { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
+    { name: 'Reports', href: '/admin/reports', icon: BarChart3 },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await signOut();
-    navigate('/login');
+    navigate('/admin/login');
   };
 
   const sidebarVariants = {
+    open: { width: 256, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } },
+    closed: { width: 80, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } }
+  };
+
+  const mobileMenuVariants = {
     hidden: { x: '-100%' },
     visible: { x: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 30 } },
     exit: { x: '-100%', transition: { type: 'spring' as const, stiffness: 300, damping: 30 } }
@@ -57,89 +68,108 @@ const Layout = () => {
       </AnimatePresence>
 
       {/* Sidebar - Desktop */}
-      <aside 
-        className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 z-50 sidebar"
+      <motion.aside
+        className="hidden lg:flex flex-col fixed left-0 top-0 h-full z-50 sidebar"
+        variants={sidebarVariants}
+        animate={sidebarOpen ? 'open' : 'closed'}
         style={{ background: 'var(--bg-secondary)' }}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-4 border-b" style={{ borderColor: 'var(--border-secondary)' }}>
-          <Link to="/" className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-              <GraduationCap className="w-6 h-6 text-white" />
+        <div className="h-16 flex items-center justify-between px-4 border-b" style={{ borderColor: 'var(--border-secondary)' }}>
+          <Link to="/admin/dashboard" className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <span className="font-bold gradient-text">Campus</span>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Resource Pro</p>
-            </div>
+            {sidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <span className="font-bold gradient-text">Admin Panel</span>
+              </motion.div>
+            )}
           </Link>
+          <motion.button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </motion.button>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 overflow-y-auto">
           <ul className="space-y-1">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <NavLink
-                  to={item.path}
-                  end={item.path === '/'}
-                  className={({ isActive }) =>
-                    `sidebar-item ${isActive ? 'active' : ''}`
-                  }
-                >
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <span className="font-medium">{item.label}</span>
-                </NavLink>
-              </li>
-            ))}
+            {navigation.map((item) => {
+              const isActive = location.pathname === item.href;
+              return (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    className={`sidebar-item ${isActive ? 'active' : ''} ${!sidebarOpen ? 'justify-center' : ''}`}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {sidebarOpen && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {item.name}
+                      </motion.span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
-        {/* Admin Link */}
-        {isAdmin && (
-          <div className="px-3 py-2">
-            <Link
-              to="/admin/dashboard"
-              className="sidebar-item bg-gradient-to-r from-indigo-500/10 to-purple-500/10"
-            >
-              <Shield className="w-5 h-5 flex-shrink-0 text-indigo-500" />
-              <span className="font-medium text-indigo-600">Admin Panel</span>
-            </Link>
-          </div>
-        )}
-
         {/* User Section */}
         <div className="p-4 border-t" style={{ borderColor: 'var(--border-secondary)' }}>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center ${sidebarOpen ? 'gap-3' : 'justify-center'}`}>
             <div className="avatar">
-              {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+              {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'A'}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                {userProfile?.full_name || 'User'}
-              </p>
-              <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
-                {user?.email}
-              </p>
-            </div>
+            {sidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex-1 min-w-0"
+              >
+                <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                  {userProfile?.full_name || 'Admin'}
+                </p>
+                <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                  {user?.email}
+                </p>
+              </motion.div>
+            )}
           </div>
-          <motion.button
-            onClick={handleLogout}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </motion.button>
+          {sidebarOpen && (
+            <motion.button
+              onClick={handleSignOut}
+              className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </motion.button>
+          )}
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Sidebar - Mobile */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.aside
             className="fixed left-0 top-0 h-full w-64 z-50 lg:hidden flex flex-col"
-            variants={sidebarVariants}
+            variants={mobileMenuVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -147,14 +177,11 @@ const Layout = () => {
           >
             {/* Mobile Logo */}
             <div className="h-16 flex items-center justify-between px-4 border-b" style={{ borderColor: 'var(--border-secondary)' }}>
-              <Link to="/" className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-                  <GraduationCap className="w-6 h-6 text-white" />
+              <Link to="/admin/dashboard" className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+                  <Shield className="w-6 h-6 text-white" />
                 </div>
-                <div>
-                  <span className="font-bold gradient-text">Campus</span>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Resource Pro</p>
-                </div>
+                <span className="font-bold gradient-text">Admin Panel</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -167,21 +194,21 @@ const Layout = () => {
             {/* Mobile Navigation */}
             <nav className="flex-1 py-4 px-3 overflow-y-auto">
               <ul className="space-y-1">
-                {navItems.map((item) => (
-                  <li key={item.path}>
-                    <NavLink
-                      to={item.path}
-                      end={item.path === '/'}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) =>
-                        `sidebar-item ${isActive ? 'active' : ''}`
-                      }
-                    >
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
-                      <span className="font-medium">{item.label}</span>
-                    </NavLink>
-                  </li>
-                ))}
+                {navigation.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        to={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`sidebar-item ${isActive ? 'active' : ''}`}
+                      >
+                        <item.icon className="w-5 h-5 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
 
@@ -189,11 +216,11 @@ const Layout = () => {
             <div className="p-4 border-t" style={{ borderColor: 'var(--border-secondary)' }}>
               <div className="flex items-center gap-3">
                 <div className="avatar">
-                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'A'}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                    {userProfile?.full_name || 'User'}
+                    {userProfile?.full_name || 'Admin'}
                   </p>
                   <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
                     {user?.email}
@@ -201,7 +228,7 @@ const Layout = () => {
                 </div>
               </div>
               <button
-                onClick={handleLogout}
+                onClick={handleSignOut}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -213,7 +240,13 @@ const Layout = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+      <div 
+        className="flex-1 flex flex-col"
+        style={{ 
+          marginLeft: sidebarOpen ? '256px' : '80px',
+          transition: 'margin-left 0.3s ease'
+        }}
+      >
         {/* Header */}
         <header className="h-16 header flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-4">
@@ -248,6 +281,15 @@ const Layout = () => {
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </motion.button>
 
+            {/* Help */}
+            <motion.button
+              className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <HelpCircle className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
+            </motion.button>
+
             {/* User Menu */}
             <div className="relative">
               <motion.button
@@ -257,10 +299,10 @@ const Layout = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="avatar avatar-sm">
-                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'A'}
                 </div>
                 <span className="hidden md:block font-medium" style={{ color: 'var(--text-primary)' }}>
-                  {userProfile?.full_name || 'User'}
+                  {userProfile?.full_name || 'Admin'}
                 </span>
                 <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
               </motion.button>
@@ -273,16 +315,14 @@ const Layout = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                   >
-                    {isAdmin && (
-                      <Link to="/admin/dashboard" className="dropdown-item" onClick={() => setUserMenuOpen(false)}>
-                        <Shield className="w-4 h-4" />
-                        Admin Panel
-                      </Link>
-                    )}
+                    <Link to="/admin/settings" className="dropdown-item" onClick={() => setUserMenuOpen(false)}>
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </Link>
                     <button
                       onClick={() => {
                         setUserMenuOpen(false);
-                        handleLogout();
+                        handleSignOut();
                       }}
                       className="dropdown-item w-full text-red-500"
                     >
@@ -298,13 +338,11 @@ const Layout = () => {
 
         {/* Page Content */}
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <Outlet />
-          </div>
+          <Outlet />
         </main>
       </div>
     </div>
   );
 };
 
-export default Layout;
+export default AdminLayout;

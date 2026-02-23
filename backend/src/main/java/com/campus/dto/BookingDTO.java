@@ -1,6 +1,7 @@
 package com.campus.dto;
 
 import com.campus.enums.BookingStatus;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -41,14 +42,21 @@ public class BookingDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
-    // String setter for JSON deserialization
-    public void setStatus(String status) {
-        if (status != null && !status.isEmpty()) {
-            try {
-                this.status = BookingStatus.valueOf(status);
-            } catch (IllegalArgumentException e) {
-                // Invalid status string, leave as null
-                this.status = null;
+    // Custom setter for JSON deserialization to handle both String and BookingStatus
+    @JsonSetter("status")
+    public void setStatusFromJson(Object status) {
+        if (status == null) {
+            this.status = null;
+        } else if (status instanceof BookingStatus) {
+            this.status = (BookingStatus) status;
+        } else if (status instanceof String) {
+            String statusStr = (String) status;
+            if (!statusStr.isEmpty()) {
+                try {
+                    this.status = BookingStatus.valueOf(statusStr);
+                } catch (IllegalArgumentException e) {
+                    this.status = null;
+                }
             }
         }
     }

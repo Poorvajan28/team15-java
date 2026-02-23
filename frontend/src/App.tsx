@@ -1,9 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import Layout from './components/Layout';
+import AdminLayout from './components/AdminLayout';
 import Login from './pages/Login';
+import AdminLogin from './pages/AdminLogin';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Users from './pages/Users';
 import Resources from './pages/Resources';
 import Bookings from './pages/Bookings';
@@ -16,7 +20,11 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          
+          {/* User Protected Routes */}
           <Route
             path="/"
             element={
@@ -35,7 +43,32 @@ function App() {
             <Route path="bookings" element={<Bookings />} />
             <Route path="bookings/new" element={<BookingForm />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+          
+          {/* Admin Protected Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="users/new" element={<UserForm />} />
+            <Route path="users/:id/edit" element={<UserForm />} />
+            <Route path="resources" element={<Resources />} />
+            <Route path="resources/new" element={<ResourceForm />} />
+            <Route path="resources/:id/edit" element={<ResourceForm />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="bookings/new" element={<BookingForm />} />
+            <Route path="reports" element={<AdminDashboard />} />
+            <Route path="settings" element={<AdminDashboard />} />
+          </Route>
+          
+          {/* Catch all - redirect to login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

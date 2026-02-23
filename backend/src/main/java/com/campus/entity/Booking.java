@@ -39,7 +39,7 @@ public class Booking {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BookingStatus status;
+    private BookingStatus status = BookingStatus.PENDING;
     
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

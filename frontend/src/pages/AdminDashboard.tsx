@@ -8,17 +8,26 @@ import {
   CheckCircle, 
   XCircle, 
   TrendingUp, 
-  BarChart3,
-  RefreshCw,
+  BarChart3, 
+  Activity, 
+  Shield, 
+  Zap, 
+  RefreshCw, 
+  Download,
   ArrowUpRight,
   ArrowDownRight,
-  BookOpen,
-  Award
+  DollarSign,
+  Target,
+  Award,
+  Bell,
+  FileText,
+  AlertTriangle,
+  ChevronRight
 } from 'lucide-react';
 import { getDashboardStats } from '../services/api';
 import type { DashboardStats } from '../types';
 
-const Dashboard = () => {
+const AdminDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,46 +74,60 @@ const Dashboard = () => {
     );
   }
 
-  const quickStats = [
+  const kpiCards = [
     {
-      label: 'Total Users',
-      value: stats?.totalUsers || 0,
-      change: '+12%',
+      label: 'Total Revenue',
+      value: '$24,580',
+      change: '+12.5%',
       trend: 'up',
-      icon: Users,
+      icon: DollarSign,
+      gradient: 'from-emerald-500 to-teal-500',
+      bgGradient: 'from-emerald-500/10 to-teal-500/10'
+    },
+    {
+      label: 'Resource Utilization',
+      value: '87%',
+      change: '+5.2%',
+      trend: 'up',
+      icon: Target,
       gradient: 'from-blue-500 to-indigo-500',
       bgGradient: 'from-blue-500/10 to-indigo-500/10'
     },
     {
-      label: 'Resources',
-      value: stats?.totalResources || 0,
-      change: '+5%',
+      label: 'Active Users',
+      value: stats?.totalUsers || 0,
+      change: '+8.1%',
       trend: 'up',
-      icon: Building2,
+      icon: Users,
       gradient: 'from-purple-500 to-pink-500',
       bgGradient: 'from-purple-500/10 to-pink-500/10'
     },
     {
-      label: 'Bookings',
+      label: 'Booking Rate',
+      value: '94%',
+      change: '-2.3%',
+      trend: 'down',
+      icon: Award,
+      gradient: 'from-orange-500 to-red-500',
+      bgGradient: 'from-orange-500/10 to-red-500/10'
+    }
+  ];
+
+  const statCards = [
+    {
+      label: 'Total Resources',
+      value: stats?.totalResources || 0,
+      icon: Building2,
+      gradient: 'from-violet-500 to-purple-500',
+      bgGradient: 'from-violet-500/10 to-purple-500/10'
+    },
+    {
+      label: 'Total Bookings',
       value: stats?.totalBookings || 0,
-      change: '+18%',
-      trend: 'up',
       icon: Calendar,
       gradient: 'from-amber-500 to-orange-500',
       bgGradient: 'from-amber-500/10 to-orange-500/10'
     },
-    {
-      label: 'Success Rate',
-      value: '94%',
-      change: '+2%',
-      trend: 'up',
-      icon: Award,
-      gradient: 'from-emerald-500 to-teal-500',
-      bgGradient: 'from-emerald-500/10 to-teal-500/10'
-    }
-  ];
-
-  const statusCards = [
     {
       label: 'Pending',
       value: stats?.pendingBookings || 0,
@@ -132,7 +155,15 @@ const Dashboard = () => {
     { action: 'New booking request', resource: 'Conference Room A', time: '2 min ago', type: 'booking' },
     { action: 'Resource approved', resource: 'Lab Equipment B', time: '15 min ago', type: 'approved' },
     { action: 'New user registered', resource: 'John Smith', time: '1 hour ago', type: 'user' },
-    { action: 'Booking cancelled', resource: 'Event Hall C', time: '2 hours ago', type: 'cancelled' }
+    { action: 'Booking cancelled', resource: 'Event Hall C', time: '2 hours ago', type: 'cancelled' },
+    { action: 'Resource maintenance', resource: 'Projector Room', time: '3 hours ago', type: 'maintenance' }
+  ];
+
+  const upcomingBookings = [
+    { resource: 'Main Auditorium', date: 'Today, 2:00 PM', user: 'Engineering Dept', status: 'confirmed' },
+    { resource: 'Computer Lab 1', date: 'Tomorrow, 9:00 AM', user: 'CS Department', status: 'pending' },
+    { resource: 'Sports Complex', date: 'Feb 25, 4:00 PM', user: 'Sports Club', status: 'confirmed' },
+    { resource: 'Seminar Hall B', date: 'Feb 26, 10:00 AM', user: 'Management', status: 'pending' }
   ];
 
   return (
@@ -153,13 +184,24 @@ const Dashboard = () => {
               className="text-3xl font-bold"
               style={{ color: 'var(--text-primary)' }}
             >
-              <span className="gradient-text">Welcome Back!</span>
+              <span className="gradient-text">Admin Dashboard</span>
             </motion.h1>
             <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>
-              Here's what's happening with your campus resources today.
+              Welcome back! Here's what's happening with your campus resources.
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <motion.button
+              className="btn-ghost flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Bell className="w-5 h-5" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+            </motion.button>
             <motion.button
               className="btn-ghost flex items-center gap-2"
               whileHover={{ scale: 1.02 }}
@@ -172,18 +214,18 @@ const Dashboard = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Calendar className="w-5 h-5" />
-              <span>New Booking</span>
+              <Download className="w-5 h-5" />
+              <span>Export Report</span>
             </motion.button>
           </div>
         </div>
       </motion.div>
 
-      {/* Quick Stats */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {quickStats.map((stat) => (
+        {kpiCards.map((kpi) => (
           <motion.div
-            key={stat.label}
+            key={kpi.label}
             className="card rounded-2xl p-6 card-hover relative overflow-hidden"
             variants={itemVariants}
             whileHover={{ y: -4 }}
@@ -191,52 +233,50 @@ const Dashboard = () => {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-                  {stat.label}
+                  {kpi.label}
                 </p>
                 <p className="text-3xl font-bold mt-2" style={{ color: 'var(--text-primary)' }}>
-                  {stat.value}
+                  {kpi.value}
                 </p>
                 <div className="flex items-center gap-1 mt-2">
-                  {stat.trend === 'up' ? (
+                  {kpi.trend === 'up' ? (
                     <ArrowUpRight className="w-4 h-4 text-green-500" />
                   ) : (
                     <ArrowDownRight className="w-4 h-4 text-red-500" />
                   )}
-                  <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                    {stat.change}
+                  <span className={`text-sm font-medium ${kpi.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+                    {kpi.change}
                   </span>
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>vs last month</span>
                 </div>
               </div>
-              <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient}`}>
-                <stat.icon className={`w-6 h-6 bg-gradient-to-r ${stat.gradient} text-white rounded-lg p-0.5`} />
+              <div className={`p-3 rounded-xl bg-gradient-to-br ${kpi.bgGradient}`}>
+                <kpi.icon className={`w-6 h-6 bg-gradient-to-r ${kpi.gradient} text-white rounded-lg p-0.5`} />
               </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {statusCards.map((stat) => (
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {statCards.map((stat) => (
           <motion.div
             key={stat.label}
             className="card rounded-2xl p-5 card-hover"
             variants={itemVariants}
             whileHover={{ y: -4 }}
           >
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient}`}>
+            <div className="flex flex-col items-center text-center">
+              <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} mb-3`}>
                 <stat.icon className={`w-6 h-6 bg-gradient-to-r ${stat.gradient} text-white rounded-lg p-0.5`} />
               </div>
-              <div>
-                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                  {stat.value}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                  {stat.label}
-                </p>
-              </div>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                {stat.value}
+              </p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                {stat.label}
+              </p>
             </div>
           </motion.div>
         ))}
@@ -399,9 +439,17 @@ const Dashboard = () => {
           className="card rounded-2xl p-6"
           variants={itemVariants}
         >
-          <h2 className="text-lg font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-            Recent Activity
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+              Recent Activity
+            </h2>
+            <motion.button
+              className="text-sm text-indigo-600 font-medium flex items-center gap-1"
+              whileHover={{ x: 2 }}
+            >
+              View All <ChevronRight className="w-4 h-4" />
+            </motion.button>
+          </div>
           
           <div className="space-y-4">
             {recentActivity.map((activity, idx) => (
@@ -414,12 +462,14 @@ const Dashboard = () => {
                   activity.type === 'booking' ? 'bg-blue-100 text-blue-600' :
                   activity.type === 'approved' ? 'bg-green-100 text-green-600' :
                   activity.type === 'user' ? 'bg-purple-100 text-purple-600' :
-                  'bg-red-100 text-red-600'
+                  activity.type === 'cancelled' ? 'bg-red-100 text-red-600' :
+                  'bg-yellow-100 text-yellow-600'
                 }`}>
                   {activity.type === 'booking' ? <Calendar className="w-4 h-4" /> :
                    activity.type === 'approved' ? <CheckCircle className="w-4 h-4" /> :
                    activity.type === 'user' ? <Users className="w-4 h-4" /> :
-                   <XCircle className="w-4 h-4" />}
+                   activity.type === 'cancelled' ? <XCircle className="w-4 h-4" /> :
+                   <AlertTriangle className="w-4 h-4" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
@@ -438,41 +488,154 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Quick Actions */}
-      <motion.div 
-        className="card rounded-2xl p-6"
-        variants={itemVariants}
-      >
-        <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Users, label: 'Add User', href: '/users/new', color: 'from-blue-500 to-indigo-500' },
-            { icon: Building2, label: 'Add Resource', href: '/resources/new', color: 'from-purple-500 to-pink-500' },
-            { icon: Calendar, label: 'New Booking', href: '/bookings/new', color: 'from-amber-500 to-orange-500' },
-            { icon: BookOpen, label: 'View Reports', href: '/bookings', color: 'from-emerald-500 to-teal-500' }
-          ].map((action, idx) => (
-            <motion.a
-              key={idx}
-              href={action.href}
-              className="flex flex-col items-center gap-3 p-4 rounded-xl transition-all group"
-              style={{ background: 'var(--bg-tertiary)' }}
-              whileHover={{ scale: 1.02, y: -4 }}
-              whileTap={{ scale: 0.98 }}
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Bookings */}
+        <motion.div 
+          className="card rounded-2xl p-6"
+          variants={itemVariants}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+              Upcoming Bookings
+            </h2>
+            <motion.button
+              className="text-sm text-indigo-600 font-medium flex items-center gap-1"
+              whileHover={{ x: 2 }}
             >
-              <div className={`p-3 rounded-xl bg-gradient-to-br ${action.color}`}>
-                <action.icon className="w-6 h-6 text-white" />
+              Manage <ChevronRight className="w-4 h-4" />
+            </motion.button>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                    Resource
+                  </th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                    Date
+                  </th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                    User
+                  </th>
+                  <th className="text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingBookings.map((booking, idx) => (
+                  <motion.tr
+                    key={idx}
+                    className="border-b"
+                    style={{ borderColor: 'var(--border-secondary)' }}
+                    whileHover={{ background: 'var(--bg-tertiary)' }}
+                  >
+                    <td className="py-3">
+                      <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                        {booking.resource}
+                      </span>
+                    </td>
+                    <td className="py-3">
+                      <span style={{ color: 'var(--text-secondary)' }}>{booking.date}</span>
+                    </td>
+                    <td className="py-3">
+                      <span style={{ color: 'var(--text-secondary)' }}>{booking.user}</span>
+                    </td>
+                    <td className="py-3">
+                      <span className={`badge ${
+                        booking.status === 'confirmed' ? 'badge-success' : 'badge-warning'
+                      }`}>
+                        {booking.status}
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+
+        {/* Quick Actions & System Status */}
+        <motion.div 
+          className="space-y-6"
+          variants={itemVariants}
+        >
+          {/* Quick Actions */}
+          <div className="card rounded-2xl p-6">
+            <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+              Quick Actions
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { icon: Users, label: 'Add User', href: '/admin/users/new', color: 'from-blue-500 to-indigo-500' },
+                { icon: Building2, label: 'Add Resource', href: '/admin/resources/new', color: 'from-purple-500 to-pink-500' },
+                { icon: Calendar, label: 'New Booking', href: '/admin/bookings/new', color: 'from-amber-500 to-orange-500' },
+                { icon: FileText, label: 'Reports', href: '/admin/reports', color: 'from-emerald-500 to-teal-500' }
+              ].map((action, idx) => (
+                <motion.a
+                  key={idx}
+                  href={action.href}
+                  className="flex items-center gap-3 p-4 rounded-xl transition-all group"
+                  style={{ background: 'var(--bg-tertiary)' }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={`p-2 rounded-lg bg-gradient-to-br ${action.color}`}>
+                    <action.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                    {action.label}
+                  </span>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* System Status */}
+          <div className="card rounded-2xl p-6">
+            <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+              System Status
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--bg-tertiary)' }}>
+                <div className="flex items-center gap-3">
+                  <Activity className="w-5 h-5 text-green-500" />
+                  <span style={{ color: 'var(--text-secondary)' }}>Backend API</span>
+                </div>
+                <span className="badge badge-success flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  Online
+                </span>
               </div>
-              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
-                {action.label}
-              </span>
-            </motion.a>
-          ))}
-        </div>
-      </motion.div>
+              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--bg-tertiary)' }}>
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-green-500" />
+                  <span style={{ color: 'var(--text-secondary)' }}>Database</span>
+                </div>
+                <span className="badge badge-success flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  Connected
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--bg-tertiary)' }}>
+                <div className="flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-green-500" />
+                  <span style={{ color: 'var(--text-secondary)' }}>Cache</span>
+                </div>
+                <span className="badge badge-success flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  Active
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

@@ -8,7 +8,7 @@ import type { Booking, BookingStatus } from '../types';
 const Bookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<BookingStatus | 'ALL'>('ALL');
 
   useEffect(() => {
@@ -120,6 +120,13 @@ const Bookings = () => {
           </Link>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="glass rounded-xl p-4 border-red-500/50 bg-red-500/10">
+          <p className="text-red-400">{error}</p>
+        </div>
+      )}
 
       {/* Filter */}
       <div className="glass rounded-xl p-4">
